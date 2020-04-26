@@ -1,0 +1,4 @@
+pandas==1.03
+yfinance==0.1.54
+matplotlib==3.2.1
+dash==1.9.1
