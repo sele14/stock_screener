@@ -1,5 +1,8 @@
 # Stock Strategy Web App
 
+![](/static/profile_pics/stock_scrn.png)
+
+
 ### 1) Introduction 
 This web app will let the user grab stock data from an API. This data gets plotted for various time horizons. The user can also test different factor strategies. The code is based on my dissertation at the University of Warwick.
 
