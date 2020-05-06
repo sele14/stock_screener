@@ -6,9 +6,9 @@ from .Dash_fun import apply_layout_with_auth, load_object, save_object
 import dash_core_components as dcc
 import dash_html_components as html
 
-
 import yfinance as yf
 import matplotlib.pyplot as plt
+from newsapi import NewsApiClient
 
 import dash
 #from iexfinance import get_historical_data
@@ -19,8 +19,66 @@ import datetime
 import pandas as pd
 import requests
 
+
 # path to launch the app
 url_base = '/screener/'
+
+
+# News API key
+api_key = "531f115b36694462bdafb088d7664bf9"
+
+    # news api callback
+def news_api():
+    # adding news api
+    newsapi = NewsApiClient(api_key=api_key)
+    headlines = newsapi.get_top_headlines(sources='cnbc')
+    articles = headlines['articles']
+
+    news = []
+    url = []
+    for i in range(len(articles)):
+        my_article = articles[i]
+        news.append(my_article['title'])  
+        url.append(my_article['url'])
+
+    news = pd.DataFrame(news, url)
+    news = news.reset_index()
+    news.columns = ['URL', 'Article']
+    
+    return news  
+
+# make a table for the news api data
+def news_table(rows=10):
+    news_data = news_api()
+
+    return html.Div(
+        [
+            html.Div(
+                html.Table(
+                    # Header
+                    [html.Tr([html.Th()])]
+                    +
+                    # Body
+                    [
+                        html.Tr(
+                            [
+                                html.Td(
+                                    html.A(
+                                        news_data.iloc[i]["Article"],
+                                        href=news_data.iloc[i]["URL"],
+                                        target="_blank"
+                                    )
+                                )
+                            ]
+                        )
+                        for i in range(min(len(news_data),10))
+                    ]
+                ),
+                style={"height": "300px", "overflowY": "scroll"},
+            ),
+        ],
+        style={"height": "100%"},)
+
 
 
 layout = html.Div([
@@ -31,8 +89,10 @@ layout = html.Div([
         html.Button(id="submit-button", n_clicks=0, children="Submit")
     ]),
 
-    # Display Graph
+    # Main Layout Div
     html.Div([
+
+        # Display Stock Plot
         html.Div([
             dcc.Graph(
                 id="graph_close",
@@ -41,12 +101,19 @@ layout = html.Div([
 
         # Display Market news feed (to do)
         html.Div([
-            html.H3("Market News"),
+            html.H3(html.Font("News Feed"),),
+
+            # Display the news from API
+            news_table()
+
+
         ], className="six columns"),
 
     ],className="row")
 ])
 
+
+### Callbacks ###
 
 
 def Add_Dash(server):
@@ -62,7 +129,8 @@ def Add_Dash(server):
                   )
 
     def update_fig(n_clicks, input_value):
-        #df = get_historical_data(input_value, start=start, end=end, output_format="pandas")
+        news_api()
+        # API call, grab stock data
         df = yf.Ticker(input_value)
         df = df.history(period="max")
 
@@ -77,6 +145,7 @@ def Add_Dash(server):
                                     y=list(df.Close),
                                     #visible=False,
                                     name="Close",
+                                    line={"color":'#005651'},
                                     showlegend=False)
 
         trace_candle = go.Candlestick(x=df.index,
@@ -168,5 +237,23 @@ def Add_Dash(server):
             "layout": layout
         }
 
+
+
+
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     return dash_app.server

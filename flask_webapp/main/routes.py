@@ -36,6 +36,9 @@ def factor_invest():
 def machine_learning_wiki():
 	return render_template('machine_learning_wiki.html', title='Machine Learning Wiki')
  
-
+@main.route('/backtester')
+def backtester():
+	return render_template('backtester.html', title='Backtesting')
+ 
 
 

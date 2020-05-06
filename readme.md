@@ -1,6 +1,6 @@
 # Stock Strategy Web App
 
-![](/static/profile_pics/stock_scrn.png)
+![App Screenshot](/flask_webapp/static/profile_pics/stock_scr.png)
 
 
 ### 1) Introduction 
