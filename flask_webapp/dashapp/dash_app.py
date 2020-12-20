@@ -10,14 +10,12 @@ import yfinance as yf
 import matplotlib.pyplot as plt
 from newsapi import NewsApiClient
 
-import dash
-#from iexfinance import get_historical_data
-import iexfinance
 from dateutil.relativedelta import relativedelta
 import plotly.graph_objs as go
-import datetime
 import pandas as pd
-import requests
+
+# Import API key env variable
+from env_vars import news_api_key
 
 
 # path to launch the app
@@ -25,13 +23,18 @@ url_base = '/screener/'
 
 
 # News API key
-api_key = "531f115b36694462bdafb088d7664bf9"
+api_key = news_api_key
 
-    # news api callback
+# news api callback
 def news_api():
     # adding news api
     newsapi = NewsApiClient(api_key=api_key)
-    headlines = newsapi.get_top_headlines(sources='cnbc')
+    # headlines = newsapi.get_top_headlines(sources='cnbc')
+
+    headlines = newsapi.get_top_headlines(
+                                          category='business',
+                                          country='us',
+                                          language='en')
     articles = headlines['articles']
 
     news = []
